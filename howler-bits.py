@@ -13,8 +13,12 @@ def main():
             ext = os.path.splitext(file_name)[1][1:]
             audio = AudioSegment.from_file(file_name, ext)
             name = os.path.basename(file_name)
+            output_dir = os.path.join (dir_name, 'output')
+
+            if not os.path.exists(output_dir):
+                os.mkdir(output_dir)
             
-            split_and_output_audio(audio, ext, name, file_name, dir_name)
+            split_and_output_audio(audio, ext, name, file_name, output_dir)
 
 
 if __name__ == "__main__":
