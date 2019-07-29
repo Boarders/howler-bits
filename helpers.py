@@ -40,7 +40,7 @@ def make_file_name(current_file_name, start_time, end_time):
 
 # This function splits the audio into segments returning a list
 # containing a tuple of the audio segment along the name of the segment
-def split_audio_and_make_name(segment_length : int, audio, name, start):
+def split_audio_and_make_name(segment_length : int, audio, name, start, dir_name):
     audio_end = len(audio) + start
     # This is the number of segments we will have
     num_segments = int(floor(len(audio) / segment_length))
@@ -52,6 +52,7 @@ def split_audio_and_make_name(segment_length : int, audio, name, start):
               ( name
               , start + t * (segment_length)
               , min (start + (t + 1) * (segment_length), audio_end))
+          , dir_name
           ) for t
           in range(0 , num_segments + 1)
         ]
@@ -65,21 +66,25 @@ def split_in_three(audio):
     return (audio[0:third], audio[third: two_thirds], audio [two_thirds:], third)
     
 
-def output_file(extension, audio, name):
+def output_file(extension, audio, name, dir_name):
     filename = name + "." + extension
     with open("output/" + filename, "wb") as f:
         audio.export(f,format = extension)
 
 
-output_mp3 = partial(output_file, 'mp3')
+def output_ext(ext):
+    partial(output_file, ext)
 
-def output_all(ls):
+def output_all(ext, ls):
     for p in ls:
-        output_mp3(p[0], p[1])
-  
+        output_file(ext,p[0], p[1], p[2])
 
+def split_and_output_audio(audio, ext, name, file_name, dir_name):
+    (seg1, seg2, seg3, third) = split_in_three(audio)
+    segs1 = split_audio_and_make_name (five_min, seg1, name, 0, dir_name)
+    segs2 = split_audio_and_make_name (ten_min,  seg2, name, third, dir_name)
+    segs3 = split_audio_and_make_name (fifteen_min, seg2, name, 2 * third, dir_name)
 
-#to do:
-# - error with naming after split into three
-#   e.g. if segment is not multiple of five minutes then the end time is incorrect
-
+    output_all(ext, segs1)
+    output_all(ext, segs2)
+    output_all(ext, segs3)        
