@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from pydub import AudioSegment
 from helpers import *
 import os
@@ -17,7 +19,6 @@ def main():
 
             if not os.path.exists(output_dir):
                 os.mkdir(output_dir)
-            
             split_and_output_audio(audio, ext, name, file_name, output_dir)
 
 
